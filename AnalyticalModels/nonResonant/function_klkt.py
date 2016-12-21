@@ -4,8 +4,9 @@
 
 ##########################################
 # It tests with simulation to: 
-# 13 (42)  -10.	0.5	0	0	0 : python function_klkt.py  --LHC 13 --kl -10 --kt 0.5 --c2 0 --cg 0 --c2g 0  --v1 False
-# 14 (9) 0.0001	2.25	0	0	0 : python function_klkt.py  --LHC 13 --kl 0.0001 --kt 2.25 --c2 0 --cg 0 --c2g 0  --v1 False
+#  kl	1.0	0	0	0	: python function_klkt.py  --LHC 13 --kl 1 --kt 1 --c2 0 --cg 0 --c2g 0 --v1 False
+# -10.	0.5	0	0	0	: python function_klkt.py  --LHC 13 --kl -10 --kt 0.5 --c2 0 --cg 0 --c2g 0  --v1 False
+#  0.0001	2.25	0	0	0 : python function_klkt.py  --LHC 13 --kl 0.0001 --kt 2.25 --c2 0 --cg 0 --c2g 0  --v1 False
 
 from array import array
 import math
@@ -51,10 +52,7 @@ def functionGF(kl,kt,c2,cg,c2g,A):
     return A[0]*kt**4 + (A[1]*kt**2 )*kl**2 + A[2]*kt*kl*kt**2 
 ###############################
 # read the GF coeficients in 15 2D matrices
-# 90 bins in mhh from 0 to 1800 GeV (20 GeV wide)
-# 9 bins in cost* from -1 to 1 (0.2 wide)
 ############################### 
-#filne = "teste.txt"
 filne = "coefficientsByBin_klkt.txt"
 f = open(filne, 'r+')
 lines = f.readlines() # get all lines as a list (array)
@@ -85,7 +83,7 @@ for line in  lines:
        MHH[countercost][countermhh] = l[1] 
        COSTS[countercost][countermhh] = l[2] 
        effSM[countercost][countermhh] = l[3]/10000. # in units of 10k
-       effSum[countercost][countermhh] = l[4]/10000. # in units of 10k ===> to adapt to your input
+       if v1 == False : effSum[countercost][countermhh] = l[4]/10000. # in units of 10k ===> to adapt to CMS v1
        A1[countercost][countermhh] = l[5]
        A3[countercost][countermhh] = l[6]
        A7[countercost][countermhh] = l[7]
@@ -267,23 +265,4 @@ plt.cla()   # Clear axis
 plt.clf()   # Clear figure
 plt.close() # Close a figure window
 ##########################################
-#hcostS = ROOT.TH1F("hcostS", "costS", 50, -1, 1)
-#hcostS = Hist(-1, 1, 50, title='costS', markersize=0)
-#fill_hist_with_ndarray(hcostS, CalcCost)
-#hcostS.draw()
-#hcostS.save()
-
-#fig = plt.gcf()
-#plot_url = py.plot_mpl(fig, filename='mpl-basic-histogram')
-
-#ii=1
-#j=16
-#A2 = [A1[ii][j],A2[ii][j],A3[ii][j],A4[ii][j],A5[ii][j],A6[ii][j],A7[ii][j],A8[ii][j],A9[ii][j],A10[ii][j],A11[ii][j],A12[ii][j],A13[ii][j],A14[ii][j],A14[ii][j]]
-#print (ii,j)
-#print A2
-#print str(functionGF(kl,kt,c2,cg,c2g,A13tev)) +" "+str(functionGF(kl,kt,c2,cg,c2g,A2)) +" "+str(effSM[ii][j]*functionGF(kl,kt,c2,cg,c2g,A2)/functionGF(kl,kt,c2,cg,c2g,A13tev))+" "+str(effSM[ii][j]) +" "+str(effSum[ii][j])+" "+str(MHH[ii][j])+" "+str(COSTS[ii][j])
-
-
-#0.999997 0.00049582676505 2.0002e-05 12.0012 133.9524
-#0.999997 9.54905045385e-05 1.0001e-05 6.0006 87.62316
 
