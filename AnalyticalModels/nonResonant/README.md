@@ -2,28 +2,38 @@ In this repo we have the tools for constructing shapes in the kt X kl plane anal
 
 ===========================================================================================
 We had calculated analytical formulas for signal efficiencies in bins. 
-The bins are defined as:
 
-binGenMHH = [250.,270.,300.,330.,360.,390., 420.,450.,500.,550.,600.,700.,800.,1000.]
-binGenCostS  = [ -1., -0.55,0.55,1.  ]
+The bins are defined in the gen-level variables as:
+
+binGenMHH = [250.,270.,300.,330.,360.,390., 420.,450.,500.,550.,600.,700.,800.,1000.] (X)
+
+binGenCostS  = [ -1., -0.55,0.55,1.  ] (Y)
 
 The coefficients calculated bin by bin are in "coefficientsByBin_klkt.txt"
+
    ==> The lines are respectivelly: nbins GenMhh GenCostStar NenventsSM NenventsSumV1 A1 A3 A7 errorA1 errorA3 error A7. 
+
    Where: NenventsSM and NenventsSumV1 is the number of events (in units of 10k events) in that bin,  
+
    as calculated respectivelly by simulations of  3M events for SM and the nevents calculated from the 12 benchmarks defined in 1507.02245v4 (JHEP version) each one with 100k events
+
    The numbering of the coefficients follow  arXiv:1608.06578
 
 ==========================================================================================
 In the  "test_klkt.py" we have a template how to use the above file to calculate event-by-event weights. 
 
-    ==> The functions you will need are: 
+The functions you will need are: 
+
         ==> readCoefficients : 
         ==> functionGF : Functional form (now only to kl and kt parameters)
         ==> findBin : given the gen-level variables 
-    Note that global variables with the tables of coefficients, and bin numbering are defined there.
 
-    ==> The functions main() and plotting() are merelly templates on how to apply the above mentionend functions
-    ==> We calculate the weights event by event with the tree bellow lines (in the main() function):
+Note that global variables with the tables of coefficients, and bin numbering are defined there.
+
+============================================================================================
+
+The functions main() and plotting() are merelly templates on how to apply the above mentionend functions
+We calculate the weights event by event with the tree bellow lines (in the main() function):
 
              A = [A1[bincost][binmhh],A3[bincost][binmhh],A7[bincost][binmhh]]
              effBSM = float(effSM[bincost][binmhh]*functionGF(kl,kt,c2,cg,c2g,A)/functionGF(kl,kt,c2,cg,c2g,A13tev))
