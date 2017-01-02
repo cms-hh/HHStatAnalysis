@@ -6,8 +6,7 @@
 from optparse import OptionParser
 import ROOT
 import numpy as np
-from HHStatAnalysis.AnalyticalModels.NonResonantModel import NonResonantModel
-#from HHStatAnalysis.AnalyticalModels.NonResonantModel import ReadTextEvent
+from HHStatAnalysis.AnalyticalModels import NonResonantModel
  
 parser = OptionParser()
 parser.add_option("--kl", type="float", dest="kll", help="Multiplicative factor in the H trilinear wrt to SM")
