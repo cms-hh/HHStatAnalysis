@@ -1,32 +1,43 @@
 In this repo we have the tools for constructing shapes in the kt X kl plane analitically (this framework is extensible to c2, cg, c2g and more when necessary).
 
+cmsrel CMSSW_7_4_7
+cd CMSSW_7_4_7/src
+cmsenv
+tar xzvf HHStatAnalysis.tar.gz
+scram b
+cd HHStatAnalysis/AnalyticalModels/test
+python nonResonant_bbbb.py --kl 1 --kt 1
+
+
+The input elements are described inside the folder "data"
+
 ===========================================================================================
 
-In the file "python nonResonant_test.py" there are functions to apply analytical formulas for signal efficiencies in bins. 
+In the file "test/nonResonant_test_v(0/JHEP).py" we have a template how to use the above file to calculate event-by-event weights. 
+In suma, To calculate the event weight one need the following three lines
 
-The bins are defined in the gen-level variables as:
+      mhhcost= [tree.Genmhh(),tree.GenHHCost()] # to store [mhh , cost] of that event
+      effSum = sumHAnalyticalBin.GetBinContent(bmhh,bcost)  # quantity of simulated events in that bin (without cuts)
+      weight = model.getScaleFactor(mhhcost,kl, kt,v1,model.effSM,effSum,model.MHH,model.COSTS,model.A1,model.A3,model.A7) 
 
-binGenMHH = [250.,270.,300.,330.,360.,390., 420.,450.,500.,550.,600.,700.,800.,1000.] 
-binGenCostS  = [ -1., -0.55,0.55,1.  ] 
+The sum of weights without cuts is automatically equal to 1. (with ~ 5% precision), so the sum of weights after cuts is already the signal efficiency. 
 
-The coefficients calculated bin by bin are in "coefficientsByBin_klkt.txt"
+=============================================================================================
 
-   ==> The lines are respectivelly: nbins GenMhh GenCostStar NenventsSM NenventsSumV1 A1 A3 A7 errorA1 errorA3 error A7. 
+To test this template the events are in a public space AFS
 
-   Where: NenventsSM and NenventsSumV1 is the number of events (in units of 10k events) in that bin,  
-   as calculated respectivelly by simulations of  3M events for SM and the nevents calculated from the 12 benchmarks defined in 1507.02245v4 (JHEP version) each one with 100k events
-   The numbering of the coefficients follow  arXiv:1608.06578
+  ==> The events for the 12 benchmarks defined in 1507.02245v4 (JHEP version) each one with 100k event are in txt format (a reader is implemented in the python class)
+      ==> We sum the benchmarks from 1-12 
 
-============================================================================================
-
-In the file "test/nonResonant_test.py" we have a template how to use the above file to calculate event-by-event weights. 
+  ==> The events for V0 (the same of the fullsim version of Moriond 2016) are in root format. Those are common to all CMS final states
+      ==> We sum SM + box + the V0 benchmarks from 2-13
 
 The functions main() and plotting() are merelly templates on how to apply the above mentionend functions
 We calculate the weights event by event with the tree bellow lines (in the main() function):
 
-By now you can test the formula works, the input events are assumed as the 12 benchmarks of the clustering JHEP version:
+============================================================================================
 
-It tests with simulation to the following points: 
+It tests with simulation (events stored in txt format in AFS) against the reweigthed distribution to the following points: 
 
               kl	kt			
              1.0	1.0	: python nonResonant_test.py --LHC 13 --kl 1 --kt 1 --v1 0
@@ -37,8 +48,6 @@ It tests with simulation to the following points:
 If you ask for a point that is not one of those will only draw to you the shape calculated by the reweighting, 
 If you ask for one of those points it will superimpose it with an actual MC simulation
 
-==> We stil need to adapt the denominator of the weight calculation to the v1 version (matching to use the events we have from fullsim)
-
 ===========================================================================================
- 
-==> The events for this template are in txt format in AFS
+
+

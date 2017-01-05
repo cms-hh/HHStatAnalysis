@@ -64,11 +64,11 @@ class NonResonantModel:
         print "Stored coefficients by bin"
 
     # distribute the calculated GenMHH and CostS in the bins numbering  (matching the coefficientsByBin_klkt.txt)
-    def getScaleFactor(self,mhhcost,kl, kt,v1,effSM,effSum,MHH,COSTS,A1,A3,A7):   
+    def getScaleFactor(self,mhhcost,kl, kt,effSM,MHH,COSTS,A1,A3,A7,effSumV0):   
        binGenMHH = [250.,270.,300.,330.,360.,390., 420.,450.,500.,550.,600.,700.,800.,1000.]
        binGenCostS  = [ -1., -0.55,0.55,1.  ]
        # determine from which bin the event belong
-       bincost = 0
+       binmhh = 0
        bincost = 0
        for ii in range (0,13) : 
          if mhhcost[0] > binGenMHH[12-ii] : 
@@ -81,10 +81,11 @@ class NonResonantModel:
        # calculate the weight
        A13tev = [2.09078, 0.282307, -1.37309]
        #if effSum > 0 and A1 > 0: 
-       if 1 > 0 :
+       if effSumV0 > 0 :
           A = [A1[bincost][binmhh],A3[bincost][binmhh],A7[bincost][binmhh]]
           effBSM = float(effSM[bincost][binmhh]*self.functionGF(kl,kt,0,0,0,A)/self.functionGF(kl,kt,0,0,0,A13tev))
-          if v1 ==0 : CalcWeight = effBSM/float(effSum[bincost][binmhh]) # ==> JHEP sum in denominator
+          #if v1 ==0 : CalcWeight = effBSM/float(effSum[bincost][binmhh]) # ==> JHEP sum in denominator
+          CalcWeight = effBSM/float(effSumV0) # ==> V0 sum in denominator (Moriond 2016)
           return CalcWeight
        else : return 0
 
@@ -123,6 +124,27 @@ class NonResonantModel:
                P1boost = P1
                P1boost.Boost(-SUM.BoostVector())
                mhhcost[1] = float(P1boost.CosTheta())
+
+    def LoadTestEvents(self,CalcMhhTest,CalcCostTest,filne) :
+       counteventSM = 0
+       Px = np.zeros((2)) 
+       Py = np.zeros((2)) 
+       Pz = np.zeros((2)) 
+       En = np.zeros((2)) 
+       f = open(filne, 'r+')
+       lines = f.readlines() # get all lines as a list (array)
+       countline = 0 # particuliarity of the text file with events = each 2 lines are one event there
+       for line in  lines:
+             self.ReadLine(line, countline,Px,Py,Pz,En)
+             #print countline
+             countline+=1
+             mhhcost= [0,0] # to store [mhh , cost] of that event
+             if countline==2 : # if read 2 lines 
+                self.CalculateMhhCost(mhhcost,countline,Px,Py,Pz,En) # ==> adapt to your input 
+                countline=0
+                CalcMhhTest[counteventSM] = float(mhhcost[0])
+                CalcCostTest[counteventSM] = float(mhhcost[1])
+                counteventSM+=1
 
     ###################################################
     # Draw the histograms
