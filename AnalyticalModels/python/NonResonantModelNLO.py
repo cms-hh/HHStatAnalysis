@@ -11,8 +11,6 @@ import ROOT
 ROOT.gROOT.SetBatch(True)
 import numpy as np
 from array import array
-import matplotlib
-import matplotlib.pyplot as plt
 import math
 
 class NonResonantModelNLO:
